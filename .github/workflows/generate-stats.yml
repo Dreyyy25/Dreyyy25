@@ -1,0 +1,65 @@
+name: Generate Custom Stats SVG
+
+on:
+  schedule:
+    - cron: "0 0 * * *"
+  workflow_dispatch:
+  push:
+    branches: [main]
+    paths:
+      - "scripts/**"
+      - ".github/workflows/generate-stats.yml"
+
+permissions:
+  contents: write
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout main
+        uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+          cache: "pip"
+
+      - name: Install dependencies
+        run: pip install -r requirements.txt
+
+      - name: Generate SVG
+        env:
+          GH_TOKEN: ${{ secrets.STATS_TOKEN }}
+          GH_LOGIN: Dreyyy25
+        run: python scripts/generate_svg.py
+
+      - name: Publish to `output` branch
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          set -euo pipefail
+          mv custom-stats.svg /tmp/custom-stats.svg
+
+          git config user.name  "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+
+          if git ls-remote --exit-code --heads origin output; then
+            git fetch origin output
+            git checkout output
+          else
+            git checkout --orphan output
+            git rm -rf . >/dev/null 2>&1 || true
+          fi
+
+          mv /tmp/custom-stats.svg custom-stats.svg
+          git add custom-stats.svg
+
+          if git diff --cached --quiet; then
+            echo "No changes to commit."
+            exit 0
+          fi
+
+          git commit -m "chore(stats): refresh custom-stats.svg [skip ci]"
+          git push origin output
