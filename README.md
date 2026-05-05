@@ -1,19 +1,22 @@
 <!--
   GitHub Profile README — Andrey Jay Almosara (@Dreyyy25)
   Direction: editorial-minimal. Strict monochrome (black + charcoal, white space).
-  Memorable moment: serif display name + clean typing tagline.
+  Memorable moment: serif display name + sequenced typing tagline.
 -->
 
 <div align="center">
 
-<!-- Display name in serif — Types once quickly, then holds forever. -->
+<!-- Display name in serif — Types once, holds forever. -->
 <picture>
   <source media="(prefers-color-scheme: dark)" srcset="https://readme-typing-svg.demolab.com?font=Playfair+Display&weight=700&size=56&color=FFFFFF&center=true&vCenter=true&width=820&height=80&duration=2000&pause=99999&lines=Andrey+Jay+Almosara" />
   <img alt="Andrey Jay Almosara" src="https://readme-typing-svg.demolab.com?font=Playfair+Display&weight=700&size=56&color=111111&center=true&vCenter=true&width=820&height=80&duration=2000&pause=99999&lines=Andrey+Jay+Almosara" />
 </picture>
 
 <!-- Hairline rule for editorial separation. -->
-<img alt="" src="https://raw.githubusercontent.com/catppuccin/catppuccin/main/assets/misc/transparent.png" height="1" width="120" style="background:#777" />
+<picture>
+  <source media="(prefers-color-scheme: dark)" srcset="https://raw.githubusercontent.com/catppuccin/catppuccin/main/assets/misc/transparent.png" />
+  <img alt="" src="https://raw.githubusercontent.com/catppuccin/catppuccin/main/assets/misc/transparent.png" height="1" width="120" style="background:#777" />
+</picture>
 
 <br />
 
@@ -25,7 +28,7 @@
 
 <br /><br />
 
-<!-- Static, clean typography block instead of a chaotic marquee -->
+<!-- Static, clean typography block to replace chaotic marquee -->
 <p align="center">
   <code>✦ OPEN TO INTERESTING PROBLEMS &nbsp;&nbsp;|&nbsp;&nbsp; AVAILABLE FOR HIRE ✦</code>
 </p>
@@ -51,29 +54,30 @@ Drawn to projects where the engineering has to earn its keep — services real a
 
 ## ✦ Selected Work
 
-<p align="center">
-  <a href="https://github.com/Dreyyy25/Job-Board-API-only">
-    <picture>
-      <source media="(prefers-color-scheme: dark)" srcset="https://github-readme-stats.vercel.app/api/pin/?username=Dreyyy25&repo=Job-Board-API-only&theme=react-dark&hide_border=false&border_color=30363D&bg_color=0D1117&title_color=FFFFFF&text_color=DDDDDD&icon_color=FFFFFF" />
-      <img src="https://github-readme-stats.vercel.app/api/pin/?username=Dreyyy25&repo=Job-Board-API-only&theme=minimal&hide_border=false&border_color=E1E4E8&bg_color=FFFFFF&title_color=111111&text_color=333333&icon_color=111111" alt="Job-Board-API-only" />
-    </picture>
-  </a>
-  &nbsp;&nbsp;
-  <a href="https://github.com/Dreyyy25/smart-recycling">
-    <picture>
-      <source media="(prefers-color-scheme: dark)" srcset="https://github-readme-stats.vercel.app/api/pin/?username=Dreyyy25&repo=smart-recycling&theme=react-dark&hide_border=false&border_color=30363D&bg_color=0D1117&title_color=FFFFFF&text_color=DDDDDD&icon_color=FFFFFF" />
-      <img src="https://github-readme-stats.vercel.app/api/pin/?username=Dreyyy25&repo=smart-recycling&theme=minimal&hide_border=false&border_color=E1E4E8&bg_color=FFFFFF&title_color=111111&text_color=333333&icon_color=111111" alt="smart-recycling" />
-    </picture>
-  </a>
-</p>
-<p align="center">
-  <a href="https://github.com/Dreyyy25/Select-AI">
-    <picture>
-      <source media="(prefers-color-scheme: dark)" srcset="https://github-readme-stats.vercel.app/api/pin/?username=Dreyyy25&repo=Select-AI&theme=react-dark&hide_border=false&border_color=30363D&bg_color=0D1117&title_color=FFFFFF&text_color=DDDDDD&icon_color=FFFFFF" />
-      <img src="https://github-readme-stats.vercel.app/api/pin/?username=Dreyyy25&repo=Select-AI&theme=minimal&hide_border=false&border_color=E1E4E8&bg_color=FFFFFF&title_color=111111&text_color=333333&icon_color=111111" alt="Select-AI" />
-    </picture>
-  </a>
-</p>
+<!-- Native Markdown Grid: Bulletproof, won't break when external APIs go down -->
+<table width="100%">
+  <tr>
+    <td width="50%" valign="top">
+      <h3><a href="https://github.com/Dreyyy25/Job-Board-API-only">01 / Job-Board-API</a></h3>
+      <p>A backend-first job marketplace API — postings, applicants, auth, and search endpoints. No UI baked in.</p>
+      <code>Python</code> <code>FastAPI</code> <code>Postgres</code>
+    </td>
+    <td width="50%" valign="top">
+      <h3><a href="https://github.com/Dreyyy25/smart-recycling">02 / Smart-Recycling</a></h3>
+      <p>Point a camera at an item, get its recycling category and disposal guidance.</p>
+      <code>Python</code> <code>Computer Vision</code>
+    </td>
+  </tr>
+  <tr>
+    <td width="50%" valign="top">
+      <br>
+      <h3><a href="https://github.com/Dreyyy25/Select-AI">03 / Select-AI</a></h3>
+      <p>A focused tool that picks the right AI model for the task instead of hard-coding one.</p>
+      <code>Python</code> <code>LLM Routing</code>
+    </td>
+    <td width="50%" valign="top"></td>
+  </tr>
+</table>
 
 <br />
 
