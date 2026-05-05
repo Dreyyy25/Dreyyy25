@@ -1,0 +1,98 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="720" height="240" viewBox="0 0 720 240" role="img">
+  <defs>
+    <linearGradient id="bg" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0%" stop-color="#1a1b26"/>
+      <stop offset="100%" stop-color="#14151e"/>
+    </linearGradient>
+    <linearGradient id="cardBg" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0%" stop-color="#24283b" stop-opacity="0.8"/>
+      <stop offset="100%" stop-color="#24283b" stop-opacity="0.3"/>
+    </linearGradient>
+    <linearGradient id="glow1" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0%" stop-color="#7aa2f7"/>
+      <stop offset="100%" stop-color="#bb9af7"/>
+    </linearGradient>
+    <linearGradient id="glow2" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0%" stop-color="#ff9e64"/>
+      <stop offset="100%" stop-color="#7aa2f7"/>
+    </linearGradient>
+    <linearGradient id="glow3" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0%" stop-color="#9ece6a"/>
+      <stop offset="100%" stop-color="#bb9af7"/>
+    </linearGradient>
+    
+    <filter id="blur" x="-20%" y="-20%" width="140%" height="140%">
+      <feGaussianBlur stdDeviation="15"/>
+    </filter>
+
+    <style>
+      .title { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', system-ui, sans-serif; font-weight: 700; font-size: 16px; fill: #ffffff; letter-spacing: 0.5px; }
+      .user { font-family: 'JetBrains Mono', monospace; font-size: 13px; fill: #565f89; }
+      .label { font-family: 'JetBrains Mono', monospace; font-size: 11px; font-weight: 600; fill: #a9b1d6; text-transform: uppercase; letter-spacing: 1.5px; opacity: 0.8; }
+      .val { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', system-ui, sans-serif; font-weight: 800; font-size: 46px; fill: #ffffff; }
+      .sub { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', system-ui, sans-serif; font-size: 12px; fill: #565f89; font-weight: 500; }
+      .card { stroke: #565f89; stroke-width: 1px; stroke-opacity: 0.2; }
+    </style>
+  </defs>
+
+  <!-- Ambient Background -->
+  <rect x="0" y="0" width="720" height="240" rx="16" fill="url(#bg)"/>
+  <circle cx="0" cy="0" r="200" fill="url(#glow1)" filter="url(#blur)" opacity="0.15"/>
+  <circle cx="720" cy="240" r="200" fill="url(#glow3)" filter="url(#blur)" opacity="0.15"/>
+  
+  <rect x="0" y="0" width="720" height="240" rx="16" fill="none" stroke="#565f89" stroke-opacity="0.3"/>
+
+  <!-- Top Navigation / Header -->
+  <circle cx="30" cy="30" r="6" fill="#bb9af7">
+    <animate attributeName="opacity" values="0.4;1;0.4" dur="2s" repeatCount="indefinite"/>
+  </circle>
+  <text x="48" y="35" class="title">Developer Analytics</text>
+  <text x="690" y="34" class="user" text-anchor="end">@Dreyyy25</text>
+  <line x1="20" y1="55" x2="700" y2="55" stroke="#565f89" stroke-opacity="0.15"/>
+
+  <!-- Card 1: Total Contributions -->
+  <g transform="translate(20, 75)">
+    <rect x="0" y="0" width="213" height="145" rx="12" fill="url(#cardBg)" class="card"/>
+    <circle cx="180" cy="30" r="30" fill="url(#glow1)" filter="url(#blur)" opacity="0.4">
+      <animate attributeName="r" values="30;35;30" dur="4s" repeatCount="indefinite"/>
+    </circle>
+    <text x="20" y="30" class="label">Total Commits</text>
+    <text x="20" y="90" class="val">747</text>
+    <text x="20" y="120" class="sub">Contributions past year</text>
+    <g transform="translate(175, 15)">
+      <circle cx="10" cy="10" r="12" fill="#7aa2f7" opacity="0.15"/>
+      <text x="10" y="14" font-size="12" text-anchor="middle" dominant-baseline="middle">💻</text>
+    </g>
+  </g>
+
+  <!-- Card 2: Current Streak -->
+  <g transform="translate(253, 75)">
+    <rect x="0" y="0" width="213" height="145" rx="12" fill="url(#cardBg)" class="card"/>
+    <circle cx="180" cy="30" r="30" fill="url(#glow2)" filter="url(#blur)" opacity="0.4">
+      <animate attributeName="r" values="30;36;30" dur="3s" repeatCount="indefinite"/>
+    </circle>
+    <text x="20" y="30" class="label">Current Streak</text>
+    <text x="20" y="90" class="val">1</text>
+    <text x="20" y="120" class="sub">Consecutive days</text>
+    <g transform="translate(175, 15)">
+      <circle cx="10" cy="10" r="12" fill="#ff9e64" opacity="0.15"/>
+      <text x="10" y="14" font-size="12" text-anchor="middle" dominant-baseline="middle">🔥</text>
+    </g>
+  </g>
+
+  <!-- Card 3: Longest Streak -->
+  <g transform="translate(486, 75)">
+    <rect x="0" y="0" width="213" height="145" rx="12" fill="url(#cardBg)" class="card"/>
+    <circle cx="180" cy="30" r="30" fill="url(#glow3)" filter="url(#blur)" opacity="0.4">
+      <animate attributeName="r" values="30;34;30" dur="5s" repeatCount="indefinite"/>
+    </circle>
+    <text x="20" y="30" class="label">Longest Streak</text>
+    <text x="20" y="90" class="val">12</text>
+    <text x="20" y="120" class="sub">Personal best record</text>
+    <g transform="translate(175, 15)">
+      <circle cx="10" cy="10" r="12" fill="#9ece6a" opacity="0.15"/>
+      <text x="10" y="14" font-size="12" text-anchor="middle" dominant-baseline="middle">🏆</text>
+    </g>
+  </g>
+
+</svg>
