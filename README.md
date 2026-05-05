@@ -82,7 +82,7 @@
 <p align="center">
   <!-- Core Stats & Commit History -->
   <img src="https://github-profile-summary-cards.vercel.app/api/cards/stats?username=Dreyyy25&theme=tokyonight" width="48%" alt="GitHub Stats" />
-  <img src="https://github-profile-summary-cards.vercel.app/api/cards/commits-per-month?username=Dreyyy25&theme=tokyonight" width="48%" alt="Commits Per Month" />
+  <img src="https://github-profile-summary-cards.vercel.app/api/cards/most-commit-language?username=Dreyyy25&theme=tokyonight" width="48%" alt="Most Commits by Language" />
 </p>
 
 <p align="center">
