@@ -2,25 +2,24 @@ name: Generate Snake Animation
 
 on:
   schedule:
-    # Run automatically every 12 hours
-    - cron: "0 */12 * * *" 
-  
-  # Allows you to manually run the job at any time
+    - cron: "0 */12 * * *"
   workflow_dispatch:
-  
-  # Run on every push on the main branch
   push:
     branches:
-    - main
-    
+      - main
+
+permissions:
+  contents: write
+
 jobs:
   generate:
-    permissions: 
-      contents: write
     runs-on: ubuntu-latest
     timeout-minutes: 5
-    
+
     steps:
+      - name: Checkout main
+        uses: actions/checkout@v4
+
       - name: Generate github-contribution-grid-snake.svg
         uses: Platane/snk/svg-only@v3
         with:
@@ -30,12 +29,35 @@ jobs:
             dist/github-contribution-grid-snake-dark.svg?palette=github-dark
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-          
-      - name: Push to the output branch
-        uses: crazy-max/ghaction-github-pages@v3.1.0
-        with:
-          target_branch: output
-          build_dir: dist
-          keep_history: true
+
+      - name: Publish to `output` branch
         env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          set -euo pipefail
+          mkdir -p /tmp/snake
+          mv dist/github-contribution-grid-snake.svg      /tmp/snake/
+          mv dist/github-contribution-grid-snake-dark.svg /tmp/snake/
+
+          git config user.name  "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+
+          if git ls-remote --exit-code --heads origin output; then
+            git fetch origin output
+            git checkout output
+          else
+            git checkout --orphan output
+            git rm -rf . >/dev/null 2>&1 || true
+          fi
+
+          mv /tmp/snake/github-contribution-grid-snake.svg      .
+          mv /tmp/snake/github-contribution-grid-snake-dark.svg .
+          git add github-contribution-grid-snake.svg github-contribution-grid-snake-dark.svg
+
+          if git diff --cached --quiet; then
+            echo "No changes to commit."
+            exit 0
+          fi
+
+          git commit -m "chore(snake): refresh contribution snake [skip ci]"
+          git push origin output
