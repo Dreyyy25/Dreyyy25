@@ -72,7 +72,7 @@
       <animate attributeName="r" values="30;36;30" dur="3s" repeatCount="indefinite"/>
     </circle>
     <text x="20" y="30" class="label">Current Streak</text>
-    <text x="20" y="90" class="val">3</text>
+    <text x="20" y="90" class="val">0</text>
     <text x="20" y="120" class="sub">Consecutive days</text>
     <g transform="translate(175, 15)">
       <circle cx="10" cy="10" r="12" fill="#ff9e64" opacity="0.15"/>
