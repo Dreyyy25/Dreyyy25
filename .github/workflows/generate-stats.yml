@@ -1,4 +1,4 @@
-name: Generate Custom Stats SVG
+name: Generate Profile SVG
 
 on:
   schedule:
@@ -40,7 +40,7 @@ jobs:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: |
           set -euo pipefail
-          mv custom-stats.svg /tmp/custom-stats.svg
+          mv profile.svg /tmp/profile.svg
 
           git config user.name  "github-actions[bot]"
           git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
@@ -53,13 +53,18 @@ jobs:
             git rm -rf . >/dev/null 2>&1 || true
           fi
 
-          mv /tmp/custom-stats.svg custom-stats.svg
-          git add custom-stats.svg
+          mv /tmp/profile.svg profile.svg
+          git add profile.svg
+
+          # custom-stats.svg was the pre-redesign artifact; drop it once.
+          if [ -f custom-stats.svg ]; then
+            git rm --quiet custom-stats.svg
+          fi
 
           if git diff --cached --quiet; then
             echo "No changes to commit."
             exit 0
           fi
 
-          git commit -m "chore(stats): refresh custom-stats.svg [skip ci]"
+          git commit -m "chore(profile): refresh profile.svg [skip ci]"
           git push origin output

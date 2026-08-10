@@ -1,0 +1,32 @@
+# Local editor / MCP config
+.mcp.json
+.claude/
+
+# Local design docs / working notes
+docs/
+
+# Python
+__pycache__/
+*.py[cod]
+.venv/
+venv/
+env/
+
+# Tooling caches
+.ruff_cache/
+.mypy_cache/
+.pytest_cache/
+
+# Environment / secrets
+.env
+.env.*
+
+# Generated output — CI builds this and publishes it to the `output` branch.
+# Local renders (scripts/generate_svg.py --sample) must never land on main.
+profile.svg
+dist/
+
+# OS cruft
+Thumbs.db
+desktop.ini
+.DS_Store
