@@ -37,10 +37,19 @@ RED = "#f7768e"
 AMBER = "#e0af68"
 
 # --- Geometry --------------------------------------------------------------
-PAD = 20                # canvas inset, so the drop shadow is not clipped
+# Canvas inset. Wide enough to clear the drop shadow and to give the window a
+# visible backdrop to float on: GitHub allows no CSS, so a "page background"
+# can only exist inside the image itself.
+PAD = 44
 WIN_X = PAD
 WIN_Y = PAD
 WIN_W = 820
+
+# Backdrop
+BACKDROP_HI = "#171823"
+BACKDROP_LO = "#101018"
+AURORA_A = "#7aa2f7"
+AURORA_B = "#bb9af7"
 
 TITLE_H = 34
 TAB_H = 32
@@ -120,6 +129,24 @@ def _defs() -> str:
     <clipPath id="win">
       <rect x="{WIN_X}" y="{WIN_Y}" width="{WIN_W}" height="{WIN_H}" rx="12"/>
     </clipPath>
+    <clipPath id="back">
+      <rect x="0" y="0" width="{CANVAS_W}" height="{CANVAS_H}" rx="18"/>
+    </clipPath>
+    <linearGradient id="backdrop" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0%" stop-color="{BACKDROP_HI}"/>
+      <stop offset="100%" stop-color="{BACKDROP_LO}"/>
+    </linearGradient>
+    <radialGradient id="auroraA">
+      <stop offset="0%" stop-color="{AURORA_A}" stop-opacity="0.30"/>
+      <stop offset="100%" stop-color="{AURORA_A}" stop-opacity="0"/>
+    </radialGradient>
+    <radialGradient id="auroraB">
+      <stop offset="0%" stop-color="{AURORA_B}" stop-opacity="0.26"/>
+      <stop offset="100%" stop-color="{AURORA_B}" stop-opacity="0"/>
+    </radialGradient>
+    <pattern id="dots" width="16" height="16" patternUnits="userSpaceOnUse">
+      <circle cx="1.5" cy="1.5" r="1.1" fill="{FG}" opacity="0.05"/>
+    </pattern>
     <filter id="shadow" x="-25%" y="-25%" width="150%" height="150%">
       <feDropShadow dx="0" dy="2" stdDeviation="3"
                     flood-color="#000000" flood-opacity="0.40"/>
@@ -137,6 +164,18 @@ def _defs() -> str:
       .stat {{ font-family: {MONO}; font-size: 11px; fill: {COMMENT}; }}
     </style>
   </defs>"""
+
+
+def _backdrop() -> str:
+    """The surface the window floats on: gradient, aurora blooms, dot grid."""
+    return f"""  <rect x="0.5" y="0.5" width="{CANVAS_W - 1}" height="{CANVAS_H - 1}"
+        rx="18" fill="url(#backdrop)" stroke="{COMMENT}" stroke-opacity="0.22"/>
+  <g clip-path="url(#back)">
+    <ellipse cx="70" cy="40" rx="320" ry="210" fill="url(#auroraA)"/>
+    <ellipse cx="{CANVAS_W - 70}" cy="{CANVAS_H - 30}" rx="340" ry="220"
+             fill="url(#auroraB)"/>
+    <rect x="0" y="0" width="{CANVAS_W}" height="{CANVAS_H}" fill="url(#dots)"/>
+  </g>"""
 
 
 def _title_bar() -> str:
@@ -326,6 +365,7 @@ height="{CANVAS_H}" viewBox="0 0 {CANVAS_W} {CANVAS_H}" role="img"
      aria-label="andrey.py open in a code editor: Andrey Jay Almosara, \
 backend engineer, Metro Manila">
 {_defs()}
+{_backdrop()}
   <rect x="{WIN_X}" y="{WIN_Y}" width="{WIN_W}" height="{WIN_H}" rx="12"
         fill="{BG}" filter="url(#shadow)"/>
   <g clip-path="url(#win)">

@@ -27,14 +27,16 @@ DAYS = 7
 GRID_W = WEEKS * PITCH - GAP
 GRID_H = DAYS * PITCH - GAP
 
-PAD = 18
 LABEL_W = 30
-GRID_X = PAD + LABEL_W
-GRID_Y = 40
-GRID_BOTTOM = GRID_Y + GRID_H
 
-CANVAS_W = GRID_X + GRID_W + PAD
-CANVAS_H = GRID_BOTTOM + 37
+# Canvas width is pinned to the window SVG's 908 so that both, rendered at
+# width="100%" in the README, scale by the same factor — otherwise the
+# narrower image is enlarged more and its text comes out visibly bigger.
+CANVAS_W = 908
+GRID_X = (CANVAS_W - (LABEL_W + GRID_W)) // 2 + LABEL_W
+GRID_Y = 52
+GRID_BOTTOM = GRID_Y + GRID_H
+CANVAS_H = GRID_BOTTOM + 46
 
 # --- Palette (Tokyo Night) -------------------------------------------------
 PANEL = "#1a1b26"
@@ -181,13 +183,37 @@ height="{CANVAS_H}" viewBox="0 0 {CANVAS_W} {CANVAS_H}" role="img"
      aria-label="GitHub contribution grid for the last year, \
 {total:,} contributions">
   <defs>
+    <clipPath id="gback">
+      <rect x="0" y="0" width="{CANVAS_W}" height="{CANVAS_H}" rx="12"/>
+    </clipPath>
+    <linearGradient id="gbackdrop" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0%" stop-color="#171823"/>
+      <stop offset="100%" stop-color="#101018"/>
+    </linearGradient>
+    <radialGradient id="gauroraA">
+      <stop offset="0%" stop-color="#7aa2f7" stop-opacity="0.22"/>
+      <stop offset="100%" stop-color="#7aa2f7" stop-opacity="0"/>
+    </radialGradient>
+    <radialGradient id="gauroraB">
+      <stop offset="0%" stop-color="#bb9af7" stop-opacity="0.20"/>
+      <stop offset="100%" stop-color="#bb9af7" stop-opacity="0"/>
+    </radialGradient>
+    <pattern id="gdots" width="16" height="16" patternUnits="userSpaceOnUse">
+      <circle cx="1.5" cy="1.5" r="1.1" fill="{FG}" opacity="0.045"/>
+    </pattern>
     <style>
       .lbl  {{ font-family: {MONO}; font-size: 10px; fill: {MUTED}; }}
       .foot {{ font-family: {MONO}; font-size: 11px; fill: {FG}; }}
     </style>
   </defs>
   <rect x="0.5" y="0.5" width="{CANVAS_W - 1}" height="{CANVAS_H - 1}" rx="12"
-        fill="{PANEL}" stroke="{BORDER}" stroke-opacity="0.3"/>
+        fill="url(#gbackdrop)" stroke="{BORDER}" stroke-opacity="0.3"/>
+  <g clip-path="url(#gback)">
+    <ellipse cx="60" cy="20" rx="300" ry="150" fill="url(#gauroraA)"/>
+    <ellipse cx="{CANVAS_W - 60}" cy="{CANVAS_H}" rx="320" ry="160"
+             fill="url(#gauroraB)"/>
+    <rect x="0" y="0" width="{CANVAS_W}" height="{CANVAS_H}" fill="url(#gdots)"/>
+  </g>
 {_month_labels(start, today)}
 {_day_labels()}
 {columns}
