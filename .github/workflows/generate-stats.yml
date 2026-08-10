@@ -29,7 +29,7 @@ jobs:
       - name: Install dependencies
         run: pip install -r requirements.txt
 
-      - name: Generate SVG
+      - name: Generate SVGs
         env:
           GH_TOKEN: ${{ secrets.STATS_TOKEN }}
           GH_LOGIN: Dreyyy25
@@ -40,7 +40,7 @@ jobs:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: |
           set -euo pipefail
-          mv profile.svg /tmp/profile.svg
+          mv profile.svg contributions.svg /tmp/
 
           git config user.name  "github-actions[bot]"
           git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
@@ -53,13 +53,18 @@ jobs:
             git rm -rf . >/dev/null 2>&1 || true
           fi
 
-          mv /tmp/profile.svg profile.svg
-          git add profile.svg
+          mv /tmp/profile.svg /tmp/contributions.svg .
+          git add profile.svg contributions.svg
 
-          # custom-stats.svg was the pre-redesign artifact; drop it once.
-          if [ -f custom-stats.svg ]; then
-            git rm --quiet custom-stats.svg
-          fi
+          # Artifacts of superseded designs: the pre-redesign stats card, and
+          # the third-party snake that contributions.svg now replaces.
+          for stale in custom-stats.svg \
+                       github-contribution-grid-snake.svg \
+                       github-contribution-grid-snake-dark.svg; do
+            if [ -f "$stale" ]; then
+              git rm --quiet "$stale"
+            fi
+          done
 
           if git diff --cached --quiet; then
             echo "No changes to commit."

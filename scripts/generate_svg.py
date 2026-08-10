@@ -21,7 +21,8 @@ import sys
 from pathlib import Path
 from xml.sax.saxutils import escape
 
-from fetch_stats import collect
+from fetch_stats import compute_streaks, fetch_all_history
+from generate_grid import render_grid
 
 # --- Tokyo Night palette ---------------------------------------------------
 BG = "#1a1b26"          # editor background
@@ -340,25 +341,50 @@ backend engineer, Metro Manila">
 """
 
 
-def render(out_path: Path) -> None:
+def render(window_path: Path, grid_path: Path) -> None:
+    """Fetch once, render both SVGs.
+
+    fetch_all_history pages the GraphQL API a year at a time, so it is the
+    expensive part; the grid and the window share a single call.
+    """
     token = os.environ["GH_TOKEN"]
     login = os.environ.get("GH_LOGIN", "Dreyyy25")
-    stats = collect(token, login)
-    out_path.write_text(
-        render_svg(stats.total_last_year, stats.current_streak,
-                   stats.longest_streak),
-        encoding="utf-8",
-    )
-    print(f"wrote {out_path} - total={stats.total_last_year} "
-          f"current={stats.current_streak} longest={stats.longest_streak}")
+
+    days, total = fetch_all_history(token, login)
+    current, longest = compute_streaks(days)
+
+    window_path.write_text(render_svg(total, current, longest),
+                           encoding="utf-8")
+    grid_path.write_text(render_grid(days, total), encoding="utf-8")
+    print(f"wrote {window_path} and {grid_path} - total={total} "
+          f"current={current} longest={longest}")
+
+
+def _sample() -> None:
+    """Render both SVGs from synthetic data, for eyeballing without a token."""
+    import random
+    from datetime import date, timedelta
+
+    rng = random.Random(7)
+    today = date.today()
+    days = []
+    for i in range(400):
+        d = today - timedelta(days=i)
+        # Weekday-weighted, with quiet stretches, so the ramp gets exercised.
+        base = 0 if rng.random() < 0.28 else rng.randint(1, 9)
+        if d.weekday() >= 5:
+            base = base // 2
+        days.append((d, base))
+    days.reverse()
+
+    Path("profile.svg").write_text(render_svg(1081, 1, 12), encoding="utf-8")
+    Path("contributions.svg").write_text(
+        render_grid(days, sum(c for _, c in days)), encoding="utf-8")
+    print("wrote profile.svg and contributions.svg (sample data)")
 
 
 if __name__ == "__main__":
     if "--sample" in sys.argv:
-        # Render with stand-in numbers so the layout can be eyeballed without
-        # a GitHub token.
-        Path("profile.svg").write_text(render_svg(1284, 12, 47),
-                                       encoding="utf-8")
-        print("wrote profile.svg (sample data)")
+        _sample()
     else:
-        render(Path("profile.svg"))
+        render(Path("profile.svg"), Path("contributions.svg"))

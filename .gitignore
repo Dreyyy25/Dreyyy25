@@ -24,6 +24,7 @@ env/
 # Generated output — CI builds this and publishes it to the `output` branch.
 # Local renders (scripts/generate_svg.py --sample) must never land on main.
 profile.svg
+contributions.svg
 dist/
 
 # OS cruft
