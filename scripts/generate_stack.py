@@ -6,9 +6,9 @@ make room. The original expands on hover; hover is unreachable here — GitHub
 serves README images through <img>, which hit-tests as one opaque box — so the
 expansion runs on a timer instead, one pill at a time.
 
-Rows animate in parallel, each cycling through its own pills, so exactly one
-pill per row is open at any moment. Strictly one across the whole panel would
-mean a 24-slot cycle: over half a minute before some tools were ever named.
+Exactly one pill is open across the whole panel at a time, stepping through all
+24 in reading order. That makes for a long cycle — 26s, about a second a tool —
+which is the deliberate trade for never having two labels competing for the eye.
 
 Label widths are estimated from character count rather than measured, since
 GitHub loads no web fonts and there is nothing to measure against. That only
@@ -85,7 +85,11 @@ ROW_Y0 = 84
 SCALE = ICON_SIZE / 24    # Simple Icons paths are drawn on a 24x24 grid
 
 # --- Timing (IconBar's fluid ease, on a loop) ------------------------------
-CYCLE = "9s"
+# One shared cycle across every pill in the panel. TRANS_S is IconBar's expand
+# duration; the rest of each slot is dwell, so a label stays readable.
+CYCLE_S = 26.0
+TRANS_S = 0.55
+CYCLE = f"{CYCLE_S:g}s"
 EASE = "0.16 1 0.3 1"
 # The label rides an ease-in instead, so it stays near zero until the pill has
 # most of its width. That is what keeps the text from spilling past the pill
@@ -115,42 +119,69 @@ def _blend(fg: str, bg: str, alpha: float) -> str:
     )
 
 
-def _schedule(n: int) -> list[float]:
-    """Key times: one expand/collapse handover per slot, wrapping seamlessly."""
-    tr = min(0.14, 0.32 / n)
+# Every pill in one flat sequence, in reading order. ROW_BASE[r] is the global
+# slot at which row r's first pill opens.
+N_SLOTS = sum(len(slugs) for _, _, slugs in GROUPS)
+ROW_BASE: list[int] = []
+_acc = 0
+for _, _, _slugs in GROUPS:
+    ROW_BASE.append(_acc)
+    _acc += len(_slugs)
+
+TR = TRANS_S / CYCLE_S
+
+
+def _open_index(row: int, phase: int) -> int | None:
+    """Which pill of this row is open at a global phase — None if it is another
+    row's turn, in which case every pill here sits collapsed."""
+    base = ROW_BASE[row]
+    size = len(GROUPS[row][2])
+    return phase - base if base <= phase < base + size else None
+
+
+def _compact(value_for_phase) -> tuple[list[float], list]:
+    """Sample a per-phase value, keeping only the boundaries where it moves.
+
+    A naive schedule over 24 global slots gives every animation 49 keyframes,
+    nearly all of them repeats — a pill's width only changes twice in the whole
+    cycle. Emitting just the transitions keeps the file an order of magnitude
+    smaller with identical output.
+    """
+    changes = [
+        k for k in range(N_SLOTS)
+        if value_for_phase(k) != value_for_phase((k + 1) % N_SLOTS)
+    ]
     times = [0.0]
-    for k in range(n):
-        end = (k + 1) / n
-        times.append(round(end - tr, 4))
-        times.append(round(end, 4))
-    times[-1] = 1.0
-    return times
+    values = [value_for_phase(0)]
+    for k in changes:
+        end = (k + 1) / N_SLOTS
+        times.append(round(end - TR, 5))
+        values.append(value_for_phase(k))
+        times.append(round(end, 5))
+        values.append(value_for_phase((k + 1) % N_SLOTS))
+    if times[-1] < 1.0:
+        times.append(1.0)
+        values.append(value_for_phase(0))
+    else:
+        times[-1] = 1.0
+    return times, values
 
 
-def _series(n: int, value_for_phase) -> list:
-    """Sample a per-phase value onto the schedule above."""
-    out = [value_for_phase(0)]
-    for k in range(n):
-        out.append(value_for_phase(k))
-        out.append(value_for_phase((k + 1) % n))
-    return out
-
-
-def _row_width(slugs: list[str], phase: int) -> float:
+def _row_width(slugs: list[str], open_idx: int | None) -> float:
     widths = [
-        _open_w(s) if i == phase else ICON_CELL for i, s in enumerate(slugs)
+        _open_w(s) if i == open_idx else ICON_CELL for i, s in enumerate(slugs)
     ]
     return sum(widths) + PILL_GAP * (len(slugs) - 1)
 
 
-def _pill_x(slugs: list[str], index: int, phase: int) -> float:
+def _pill_x(slugs: list[str], index: int, open_idx: int | None) -> float:
     x = 0.0
     for j in range(index):
-        x += (_open_w(slugs[j]) if j == phase else ICON_CELL) + PILL_GAP
+        x += (_open_w(slugs[j]) if j == open_idx else ICON_CELL) + PILL_GAP
     return x
 
 
-def _anim(attr: str, values: list, times: list[float],
+def _anim(attr: str, times: list[float], values: list,
           ease: str = EASE, ease_fall: str | None = None) -> str:
     if ease_fall is None:
         per_segment = [ease] * (len(times) - 1)
@@ -171,26 +202,28 @@ def _anim(attr: str, values: list, times: list[float],
     )
 
 
-def _pill(slugs: list[str], index: int, colour: str, origin_x: float,
+def _pill(row: int, index: int, colour: str, origin_x: float,
           cy: float) -> str:
+    slugs = GROUPS[row][2]
     slug = slugs[index]
-    n = len(slugs)
-    times = _schedule(n)
+    slot = ROW_BASE[row] + index          # this pill's turn in the global order
     label = _label(slug)
     _, path = LOGOS[slug]
 
     open_fill = _blend(colour, PILL_BASE, 0.16)
     open_w = _open_w(slug)
 
-    xs = _series(n, lambda p: origin_x + _pill_x(slugs, index, p))
-    widths = _series(n, lambda p: open_w if p == index else ICON_CELL)
-    fills = _series(n, lambda p: open_fill if p == index else PILL_BASE)
-    text_op = _series(n, lambda p: 1.0 if p == index else 0.0)
-    icon_op = _series(n, lambda p: 1.0 if p == index else 0.68)
+    t_x, v_x = _compact(
+        lambda p: origin_x + _pill_x(slugs, index, _open_index(row, p))
+    )
+    t_w, v_w = _compact(lambda p: open_w if p == slot else float(ICON_CELL))
+    t_f, v_f = _compact(lambda p: open_fill if p == slot else PILL_BASE)
+    t_t, v_t = _compact(lambda p: 1.0 if p == slot else 0.0)
+    t_i, v_i = _compact(lambda p: 1.0 if p == slot else 0.68)
 
-    ts = ";".join(f"{t:g}" for t in times)
-    splines = ";".join([EASE] * (len(times) - 1))
-    x_vals = ";".join(f"{x:.2f},{cy}" for x in xs)
+    ts = ";".join(f"{t:g}" for t in t_x)
+    splines = ";".join([EASE] * (len(t_x) - 1))
+    x_vals = ";".join(f"{x:.2f},{cy}" for x in v_x)
 
     return (
         f'  <g>'
@@ -199,17 +232,17 @@ def _pill(slugs: list[str], index: int, colour: str, origin_x: float,
         f'calcMode="spline" dur="{CYCLE}" repeatCount="indefinite"/>'
         f'<rect x="0" y="{-PILL_H / 2}" width="{ICON_CELL}" height="{PILL_H}" '
         f'rx="12" fill="{PILL_BASE}">'
-        f'{_anim("width", widths, times)}'
-        f'{_anim("fill", fills, times)}</rect>'
+        f'{_anim("width", t_w, v_w)}'
+        f'{_anim("fill", t_f, v_f)}</rect>'
         f'<text x="{ICON_CELL}" y="{FONT * 0.36:.1f}" class="pil" '
         f'fill="{colour}" opacity="0">{escape(label)}'
-        f'{_anim("opacity", text_op, times, TEXT_EASE, TEXT_EASE_OUT)}</text>'
+        f'{_anim("opacity", t_t, v_t, TEXT_EASE, TEXT_EASE_OUT)}</text>'
         f'<g transform="translate({ICON_CELL / 2},0)">'
         f'<g transform="scale({SCALE:.4f})">'
         f'<g transform="translate(-12,-12)">'
         f'<title>{escape(label)}</title>'
         f'<path d="{path}" fill="{colour}" opacity="0.68">'
-        f'{_anim("opacity", icon_op, times)}</path>'
+        f'{_anim("opacity", t_i, v_i)}</path>'
         f'</g></g></g>'
         f'</g>'
     )
@@ -245,7 +278,7 @@ def render_stack() -> str:
             f'text-anchor="end">{escape(group)}</text>'
         )
         rows += [
-            _pill(slugs, i, colour, pill_x0, cy)
+            _pill(r, i, colour, pill_x0, cy)
             for i in range(len(slugs))
         ]
 

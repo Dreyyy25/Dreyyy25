@@ -25,21 +25,20 @@
 <br>
 
 **Estate Vault** · legal-tech SaaS · FastAPI, Supabase, PostgreSQL
-Multi-tenant isolation and role-based access control across 20+ normalized tables.
-Integrated LangGraph agents (Google Gemini) for automated legal clause assembly, and
-refactored their internals for performance and maintainability. Built Stripe Connect
-billing with a 6-level firm hierarchy, commission splits and automated payouts.
+Architected the backend across two engagements at Global Staffing US. Multi-tenant
+isolation and role-based access control over 20+ normalized tables, with zero
+cross-tenant leakage across 3+ law firms. Eliminated API timeouts on long-running AI
+work with an asynchronous job-polling pattern (pending → processing → completed),
+bringing perceived response time under 200 ms. Integrated LangGraph agents (Google
+Gemini) for automated clause assembly and refactored their internals for performance
+and maintainability. Built Stripe Connect billing with a 6-level firm hierarchy,
+commission splits and automated payouts.
 
 **Meta Health** · HIPAA-compliant healthcare platform · Django REST Framework
 Designed the initial backend: custom `UserAccount` model with UUID primary keys and
 email-based auth, role-based access control across four roles, and a PostgreSQL schema
 spanning 8 domain apps. OAuth2 + JWT foundation with PKCE for mobile clients and Argon2
 password hashing.
-
-**AI legal document platform** · FastAPI, Supabase
-Eliminated API timeouts on long-running AI tasks with an asynchronous job-polling
-pattern (pending → processing → completed), bringing perceived response time under
-200 ms. JWT multi-tenant isolation with zero cross-tenant leakage across 3+ law firms.
 
 **Automa8e** · corporate reporting · Django REST, Pydantic AI
 Automated extraction of annual reports into structured XBRL, backed by a normalized
