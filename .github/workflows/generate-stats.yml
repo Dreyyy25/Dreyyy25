@@ -40,7 +40,7 @@ jobs:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: |
           set -euo pipefail
-          mv profile.svg contributions.svg /tmp/
+          mv profile.svg contributions.svg stack.svg /tmp/
 
           git config user.name  "github-actions[bot]"
           git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
@@ -53,8 +53,8 @@ jobs:
             git rm -rf . >/dev/null 2>&1 || true
           fi
 
-          mv /tmp/profile.svg /tmp/contributions.svg .
-          git add profile.svg contributions.svg
+          mv /tmp/profile.svg /tmp/contributions.svg /tmp/stack.svg .
+          git add profile.svg contributions.svg stack.svg
 
           # Artifacts of superseded designs: the pre-redesign stats card, and
           # the third-party snake that contributions.svg now replaces.

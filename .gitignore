@@ -25,6 +25,7 @@ env/
 # Local renders (scripts/generate_svg.py --sample) must never land on main.
 profile.svg
 contributions.svg
+stack.svg
 dist/
 
 # OS cruft

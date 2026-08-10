@@ -23,6 +23,7 @@ from xml.sax.saxutils import escape
 
 from fetch_stats import compute_streaks, fetch_all_history
 from generate_grid import render_grid
+from generate_stack import render_stack
 
 # --- Tokyo Night palette ---------------------------------------------------
 BG = "#1a1b26"          # editor background
@@ -381,7 +382,7 @@ backend engineer, Metro Manila">
 """
 
 
-def render(window_path: Path, grid_path: Path) -> None:
+def render(window_path: Path, grid_path: Path, stack_path: Path) -> None:
     """Fetch once, render both SVGs.
 
     fetch_all_history pages the GraphQL API a year at a time, so it is the
@@ -396,7 +397,10 @@ def render(window_path: Path, grid_path: Path) -> None:
     window_path.write_text(render_svg(total, current, longest),
                            encoding="utf-8")
     grid_path.write_text(render_grid(days, total), encoding="utf-8")
-    print(f"wrote {window_path} and {grid_path} - total={total} "
+    # The stack panel has no live inputs, but it ships through the same
+    # pipeline so all three SVGs stay in one place on the output branch.
+    stack_path.write_text(render_stack(), encoding="utf-8")
+    print(f"wrote {window_path}, {grid_path} and {stack_path} - total={total} "
           f"current={current} longest={longest}")
 
 
@@ -420,11 +424,13 @@ def _sample() -> None:
     Path("profile.svg").write_text(render_svg(1081, 1, 12), encoding="utf-8")
     Path("contributions.svg").write_text(
         render_grid(days, sum(c for _, c in days)), encoding="utf-8")
-    print("wrote profile.svg and contributions.svg (sample data)")
+    Path("stack.svg").write_text(render_stack(), encoding="utf-8")
+    print("wrote profile.svg, contributions.svg and stack.svg (sample data)")
 
 
 if __name__ == "__main__":
     if "--sample" in sys.argv:
         _sample()
     else:
-        render(Path("profile.svg"), Path("contributions.svg"))
+        render(Path("profile.svg"), Path("contributions.svg"),
+               Path("stack.svg"))
