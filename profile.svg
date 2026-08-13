@@ -147,7 +147,7 @@
   <text x="128" y="560" class="term"
         fill="#565f89">current streak</text>
   <text x="322" y="560" class="term" text-anchor="end"
-        fill="#c0caf5">2</text>
+        fill="#c0caf5">0</text>
   <text x="328" y="560" class="term" fill="#565f89">d</text>
   <text x="398" y="560" class="term"
         fill="#565f89">longest</text>
